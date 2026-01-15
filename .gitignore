@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment variables
+.env.local
+.env.*.local
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Convex
+convex/_generated/
+
+# Temporary
+.tmp/
+.cache/
+
+# OS
+Thumbs.db
+.env.test.local
