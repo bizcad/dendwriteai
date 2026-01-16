@@ -76,7 +76,7 @@ npm run dev
 
 ### Next.js showing workspace root warning?
 
-→ This is non-critical. It's because there are two package-lock.json files. You can ignore it or see WORKSPACE_SETUP.md for the fix.
+→ This is non-critical. It appears during startup but doesn't affect functionality. It's because there are two package-lock.json files in the monorepo structure.
 
 ### Auth not working?
 
@@ -84,16 +84,34 @@ npm run dev
 
 ---
 
-## Next: Testing Auth Flow
+## Current Features
 
-When ready to test:
+✅ **User Authentication**
+
+- Sign up / Sign in with credentials
+- Auto-user creation on first capture
+- 30-day persistent login with secure cookies
+
+✅ **Capture System**
+
+- Submit ideas via capture form
+- Automatic user/tenant creation
+- Real-time sync with Convex database
+- View pending captures in "Recent Ideas"
+
+✅ **Tailwind CSS**
+
+- Pre-configured with tailwind.config.ts
+- Full styling support
+
+## Testing Workflow
 
 1. Both servers should be running (Convex + Next.js)
-2. Open browser to http://localhost:3000
-3. Should redirect to /auth/signin
-4. Sign up with test credentials
-5. Try logging out and back in
-6. Close browser entirely and reopen - should still be logged in!
+2. Open http://localhost:3000 → redirects to /auth/signin
+3. Sign up or sign in with test credentials
+4. Submit a capture from the form
+5. Should appear in "Recent Ideas" with "Pending" status
+6. Close browser completely and reopen → still logged in!
 
 ---
 

@@ -4,106 +4,176 @@ Capture, classify, and organize your ideas with AI.
 
 ## Current Status (2026-01-15)
 
-✅ **Authentication & Persistent Login Working**
-- NextAuth.js v4 configured with 30-day persistent sessions
-- Secure HttpOnly cookies + JWT tokens
-- Multi-tenant architecture ready
-- Both dev servers running: Convex (http://127.0.0.1:3210) + Next.js (http://localhost:3001)
+✅ **Core Features Working**
 
-📋 **Deployment Ready**
-- See `NEXT_STEPS.md` for 5-step deployment checklist
-- See `PRODUCTION_DEPLOYMENT.md` for detailed deployment guide
-- See `ALPHA_TESTER_GUIDE.md` for tester onboarding
+- NextAuth.js v4 with 30-day persistent sessions
+- User authentication (sign up/sign in)
+- Capture submission with auto-user creation
+- Multi-tenant architecture ready
+- Convex backend (http://127.0.0.1:3210)
+- Next.js frontend (http://localhost:3000)
+- Tailwind CSS configured
+
+📋 **Documentation & Deployment**
+
+- Spec Phase 2: Auth implementation complete ([specs/002-create-or-update2](specs/002-create-or-update2))
+- Spec Phase 3: Auth docs ([specs/003-add-auth-feature/docs](specs/003-add-auth-feature/docs))
+- Spec Phase 4: Alpha testing guide ([specs/004-Alpha-testing-and-deployment](specs/004-Alpha-testing-and-deployment))
 
 ---
 
 ## Stack
 
-- **Frontend**: Next.js 16 + TypeScript + Tailwind CSS
+- **Frontend**: Next.js 16.1.2 + TypeScript + Tailwind CSS v4
 - **Backend**: Convex (serverless database + functions)
-- **LLM**: Claude (Anthropic)
-- **Auth**: NextAuth.js + Credentials provider (multi-tenant)
+- **LLM**: Claude (Anthropic) - integrated for classification
+- **Auth**: NextAuth.js v4 + Credentials provider (multi-tenant)
+- **Database**: Convex (multi-table schema with indexes)
 - **Deployment**: Vercel (frontend) + Convex Cloud (backend)
 
 ## Project Structure
 
 ```
 dendwriteai/
-├── web/                    # Next.js 16 frontend
-│   ├── app/               # App Router (pages, components, layouts)
-│   ├── auth.ts            # NextAuth configuration
-│   ├── public/            # Static assets
+├── web/                          # Next.js 16 frontend
+│   ├── app/
+│   │   ├── api/                 # API routes (capture, auth)
+│   │   ├── auth/                # Auth pages (signin, signup)
+│   │   ├── components/          # React components (CaptureForm, etc)
+│   │   ├── layout.tsx           # Root layout with providers
+│   │   └── page.tsx             # Home page (protected)
+│   ├── auth.ts                  # NextAuth configuration
+│   ├── tailwind.config.ts       # Tailwind configuration
+│   ├── public/                  # Static assets
 │   └── package.json
-├── convex/                # Convex backend (TypeScript)
-│   ├── schema.ts          # Database schema (multi-tenant)
-│   ├── captures.ts        # Capture mutations/queries
-│   ├── classification.ts  # AI classification logic
-│   └── _generated/        # Auto-generated types & API
-├── NEXT_STEPS.md          # 5-step deployment checklist
-├── PRODUCTION_DEPLOYMENT.md # Detailed deployment guide
-├── ALPHA_TESTER_GUIDE.md  # For sharing with testers
-├── .env.local             # Local environment variables
-└── package.json           # Root dependencies
+├── convex/                       # Convex backend (TypeScript)
+│   ├── schema.ts                # Multi-tenant database schema
+│   ├── captures.ts              # Capture mutations/queries
+│   ├── classification.ts        # AI classification with Claude
+│   ├── process.ts               # Process workflow
+│   ├── llm_provider.ts          # LLM integration
+│   ├── convex.config.js         # Convex configuration
+│   └── _generated/              # Auto-generated types & API
+├── specs/
+│   ├── 002-create-or-update2/   # Auth implementation spec
+│   ├── 003-add-auth-feature/    # Auth documentation
+│   └── 004-Alpha-testing-and-deployment/ # Testing guide
+├── scripts/                     # Utility scripts
+├── QUICK_REFERENCE.md           # Development quick start
+├── README.md                    # This file
+├── .env.local                   # Local environment variables
+└── package.json                 # Root dependencies
 ```
 
 ## Getting Started
 
-
 ### Prerequisites
+
 - Node.js 20+
 - npm or yarn
 - Convex CLI (installed via npm)
 
-### Development
+### Quick Start
 
-1. **Start Convex local backend**:
-   \\\ash
-   npx convex dev
-   \\\
+**Using aliases (in VS Code terminal):**
 
-2. **In another terminal, start Next.js dev server**:
-   \\\ash
-   cd web
-   npm run dev
-   \\\
+```powershell
+# Terminal 1
+convex-dev
+
+# Terminal 2 (new terminal)
+web-dev
+```
+
+**Manual startup:**
+
+```bash
+# Terminal 1: Start Convex backend
+cd g:\repos\dendwriteai
+npx convex dev
+
+# Terminal 2: Start Next.js
+cd g:\repos\dendwriteai\web
+npm run dev
+```
 
 3. **Open browser**: http://localhost:3000
 
 ### What Works Now
-- ✅ Next.js 15 + Convex integration
-- ✅ Capture form with real-time sync
-- ✅ Display pending captures with filtered view
-- ✅ Schema with all tables (captures, people, projects, ideas, admin, lowConfidence, inboxLog)
-- ✅ Capture submission with idempotency (UUID)
+
+- ✅ Next.js 16 + Convex integration with hot reload
+- ✅ User authentication (sign up/sign in with credentials)
+- ✅ Auto-user creation on first capture
+- ✅ Persistent login (30-day sessions with secure cookies)
+- ✅ Multi-tenant support (each user gets their own tenant)
+- ✅ Capture form with real-time Convex sync
+- ✅ Display pending captures in "Recent Ideas"
+- ✅ Database schema with 8 tables (captures, users, people, projects, ideas, admin, lowConfidence, inboxLog)
 - ✅ Claude API integration for classification
-- ✅ Batch classification with "Classify All" button
 - ✅ Confidence-based routing (0.6 threshold)
 - ✅ Low-confidence flagging and review table
-- ✅ Classification logging with reasoning and confidence scores
-- ✅ Real-time UI sync and hot reload
+- ✅ Tailwind CSS v4 styling
+- ✅ NextAuth.js v4 with HttpOnly cookies + JWT
 
-### Completed Phases
-- **Phase 0 ✅**: Setup & Learning (see [PHASE-0-COMPLETE.md](PHASE-0-COMPLETE.md))
-- **Phase 1 ✅**: LLM Integration (see [PHASE-1-COMPLETE.md](PHASE-1-COMPLETE.md))
+### Project Phases
 
-### Next Steps (Phase 2+)
-- [ ] Category display pages (Inbox, People, Projects, Ideas, Admin)
+**Phase 0 ✅ - Setup & Learning**
+
+- Convex initialized with schema
+- Next.js 16 frontend created
+- Basic capture form working
+
+**Phase 1 ✅ - LLM Integration**
+
+- Claude API integrated for classification
+- Classification logic implemented
+- Low-confidence flagging system
+
+**Phase 2 ✅ - Authentication**
+
+- NextAuth.js v4 configured
+- Sign up/sign in pages
+- Persistent login with cookies
+- Multi-tenant user support
+- Auto-user creation on capture
+
+**Phase 3 - Upcoming (Category Views)**
+
+- [ ] Inbox view (classified captures)
+- [ ] People view (extracted entities)
+- [ ] Projects view (extracted initiatives)
+- [ ] Ideas view (extracted concepts)
 - [ ] Manual override UI for low-confidence items
-- [ ] GitHub authentication
+- [ ] GitHub/OAuth authentication
+
+**Phase 4 - Deployment**
+
 - [ ] Production deployment to Vercel + Convex Cloud
+- [ ] Alpha testing setup
+- [ ] Performance optimization
 
 ## Environment Variables
 
 ### Root (.env.local)
-- \CONVEX_DEPLOYMENT\: Auto-generated by convex dev
-- \CONVEX_URL\: Local backend URL (http://127.0.0.1:3210)
+
+```
+CONVEX_DEPLOYMENT=<auto-generated by convex dev>
+CONVEX_URL=http://127.0.0.1:3210
+```
 
 ### Web (.env.local)
-- \NEXT_PUBLIC_CONVEX_URL\: Public Convex URL for client
 
-### Future
-- \ANTHROPIC_API_KEY\: Claude API key (set in Convex dashboard secrets)
-- \OPENAI_API_KEY\: OpenAI API key (if switching providers)
+```
+NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210
+CONVEX_URL=http://127.0.0.1:3210
+NEXTAUTH_SECRET=<generated during setup>
+NEXTAUTH_URL=http://localhost:3000
+```
+
+### Convex Dashboard Secrets
+
+- `ANTHROPIC_API_KEY`: Claude API key (required for classification)
+- `OPENAI_API_KEY`: OpenAI API key (if switching providers)
 
 ## Resources
 
@@ -112,15 +182,9 @@ dendwriteai/
 - [Tailwind CSS](https://tailwindcss.com)
 - [Anthropic Claude](https://console.anthropic.com)
 
-## Status
+## Quick Links
 
-**Phase 0 ✅**: Setup complete
-- [x] Convex initialized (local)
-- [x] Next.js 15 created
-- [x] Schema defined
-- [x] Test page with capture form
-- [x] Convex ↔ React integration verified
-
-**Phase 1**: Core backend (in progress)
-**Phase 2**: Frontend UI
-**Phase 3**: LLM integration & deployment
+- [Quick Reference](QUICK_REFERENCE.md) - Development commands and aliases
+- [Auth Implementation](specs/003-add-auth-feature/docs) - Complete auth documentation
+- [Alpha Testing Guide](specs/004-Alpha-testing-and-deployment/ALPHA_TESTER_GUIDE.md) - For testers
+- [Spec 002: Auth Details](specs/002-create-or-update2/docs) - Technical documentation
