@@ -64,6 +64,7 @@
 ### 📊 Files Already in Specs/004
 
 Also present (from previous sessions):
+
 - PRE-DEPLOYMENT-CHECKLIST.md
 - PRODUCTION_DEPLOYMENT.md
 - QuestionManagerSchema.sql
@@ -102,11 +103,11 @@ Manual steps: 0-3 (2FA, CAPTCHA, email verification)
 
 ### Competitive Advantage
 
-| Approach | Setup Time | Manual Steps | Audit Trail | Cost |
-|----------|-----------|-------------|------------|------|
-| Traditional docs | 45-60 min | 15-20 | None | Free |
-| Terraform | 30-40 min | 8-10 | Git history | Free |
-| **Your solution** | **27 min** | **0-3** | **✓ Built-in** | **Free** |
+| Approach          | Setup Time | Manual Steps | Audit Trail    | Cost     |
+| ----------------- | ---------- | ------------ | -------------- | -------- |
+| Traditional docs  | 45-60 min  | 15-20        | None           | Free     |
+| Terraform         | 30-40 min  | 8-10         | Git history    | Free     |
+| **Your solution** | **27 min** | **0-3**      | **✓ Built-in** | **Free** |
 
 **You're 50% faster than competitors** and have full audit trail.
 
@@ -115,6 +116,7 @@ Manual steps: 0-3 (2FA, CAPTCHA, email verification)
 ## Implementation Checklist
 
 ### Before You Build
+
 - [ ] Review SETUP-AUTOMATION-MASTER-PLAN.md
 - [ ] Run Setup-Workflow-Notebook.ipynb
 - [ ] Verify all 27 questions are necessary
@@ -122,12 +124,14 @@ Manual steps: 0-3 (2FA, CAPTCHA, email verification)
 - [ ] Identify CAPTCHA/2FA obstacles
 
 ### Phase 1: Playwright Scripts (Week 1-2)
+
 - [ ] 1.1: Anthropic signup script
-- [ ] 1.2: Vercel signup script  
+- [ ] 1.2: Vercel signup script
 - [ ] 1.3: Convex signup script
 - [ ] 1.4: GitHub PAT generation script
 
 ### Phase 2: Orchestration (Week 2-3)
+
 - [ ] Load questions from QuestionManager
 - [ ] Implement task execution framework
 - [ ] Add dependency checking
@@ -135,12 +139,14 @@ Manual steps: 0-3 (2FA, CAPTCHA, email verification)
 - [ ] Add error handling & retries
 
 ### Phase 3: Integration (Week 3-4)
+
 - [ ] Connect to real APIs
 - [ ] Test end-to-end with staging accounts
 - [ ] Refine timing estimates
 - [ ] Build monitoring dashboard
 
 ### Phase 4: Polish (Week 4+)
+
 - [ ] Customer-facing UI
 - [ ] Setup progress indicator
 - [ ] Error recovery flows
@@ -190,15 +196,17 @@ Manual steps: 0-3 (2FA, CAPTCHA, email verification)
    - Integration points
 
 **Then run**: Setup-Workflow-Notebook.ipynb
-   - Interactive visualization
-   - Generate your own exports
-   - Validate specifications
+
+- Interactive visualization
+- Generate your own exports
+- Validate specifications
 
 ---
 
 ## Next Actions
 
 ### Immediate (This Week)
+
 1. ✅ Read SETUP-AUTOMATION-MASTER-PLAN.md
 2. ✅ Review all questions in SETUP-QUESTIONS.md
 3. ✅ Run Jupyter notebook to validate exports
@@ -213,18 +221,21 @@ Manual steps: 0-3 (2FA, CAPTCHA, email verification)
    - How will you detect setup success?
 
 ### Next Week
+
 1. Start building Playwright scripts (1.1 is simplest)
 2. Design QuestionManager integration (table structures)
 3. Build task orchestrator skeleton
 4. Test against real APIs
 
 ### Month 1
+
 - Complete all Playwright scripts
 - Implement orchestrator fully
 - Test end-to-end with staging accounts
 - Refine based on actual timings
 
 ### Month 2-3
+
 - Customer-facing UI
 - Production deployment
 - Monitor real setups
@@ -237,12 +248,14 @@ Manual steps: 0-3 (2FA, CAPTCHA, email verification)
 You're not building just a deployment tool. **You're building a setup automation platform.**
 
 This becomes:
+
 1. **Your MVP differentiator** - 27-minute setup vs competitors' 45-60 min
 2. **Your scaling lever** - Each customer = one questionnaire run, not hours of dev work
 3. **Your product feature** - Customers can redeploy anytime they want
 4. **Your enterprise story** - Custom deployments, private instances, compliance automation
 
 **Future possibilities:**
+
 - Setup templates for different architectures (AWS, Azure, Kubernetes)
 - White-label solution for other SaaS platforms
 - Infrastructure-as-Code generation from questionnaires
@@ -276,4 +289,3 @@ Refer to the validation questions section in SETUP-AUTOMATION-MASTER-PLAN.md for
 **Status**: ✅ **Ready for Implementation**
 
 All specifications are complete, documented, and committed. You have everything needed to hand this off or move forward with building.
-
