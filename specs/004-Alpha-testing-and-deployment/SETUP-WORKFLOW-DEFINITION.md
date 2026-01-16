@@ -11,54 +11,54 @@ This document defines the setup automation workflow as a series of idempotent, p
 ```mermaid
 stateDiagram-v2
     [*] --> INIT: Start Setup
-    
+
     INIT --> PHASE1: Phase 1: Account Creation
-    
+
     PHASE1 --> ANTH: Anthropic Signup
     PHASE1 --> VERCEL: Vercel Signup
     PHASE1 --> CONVEX: Convex Signup
     PHASE1 --> GITHUB: GitHub Token
-    
+
     ANTH --> ANTH_CHECK: Verify API Key
     ANTH_CHECK --> ANTH_OK: ✓ Ready
     ANTH_CHECK --> ANTH_FAIL: ✗ Failed
     ANTH_FAIL --> ANTH_RETRY{Retry?}
     ANTH_RETRY --> ANTH: Yes
     ANTH_RETRY --> MANUAL: No (Manual)
-    
+
     VERCEL --> VERCEL_CHECK: Verify Token
     VERCEL_CHECK --> VERCEL_OK: ✓ Ready
     VERCEL_CHECK --> VERCEL_FAIL: ✗ Failed
     VERCEL_FAIL --> VERCEL_RETRY{Retry?}
     VERCEL_RETRY --> VERCEL: Yes
     VERCEL_RETRY --> MANUAL: No (Manual)
-    
+
     CONVEX --> CONVEX_CHECK: Verify Key
     CONVEX_CHECK --> CONVEX_OK: ✓ Ready
     CONVEX_CHECK --> CONVEX_FAIL: ✗ Failed
     CONVEX_FAIL --> CONVEX_RETRY{Retry?}
     CONVEX_RETRY --> CONVEX: Yes
     CONVEX_RETRY --> MANUAL: No (Manual)
-    
+
     GITHUB --> GITHUB_CHECK: Verify Token
     GITHUB_CHECK --> GITHUB_OK: ✓ Ready
     GITHUB_CHECK --> GITHUB_FAIL: ✗ Failed
     GITHUB_FAIL --> GITHUB_RETRY{Retry?}
     GITHUB_RETRY --> GITHUB: Yes
     GITHUB_RETRY --> MANUAL: No (Manual)
-    
+
     ANTH_OK --> PHASE2
     VERCEL_OK --> PHASE2
     CONVEX_OK --> PHASE2
     GITHUB_OK --> PHASE2
-    
+
     PHASE2 --> DOMAIN_Q: Phase 2: Config Gathering
     DOMAIN_Q --> DOMAIN_CHECK{Custom Domain?}
     DOMAIN_CHECK -->|Yes| DOMAIN_INFO: Collect Domain Info
     DOMAIN_CHECK -->|No| DOMAIN_SKIP: Skip Domain Config
     DOMAIN_INFO --> DEPLOY_CONFIG: Collect Deployment Config
     DOMAIN_SKIP --> DEPLOY_CONFIG
-    
+
     DEPLOY_CONFIG --> PHASE3: Phase 3: Backend Deployment
     PHASE3 --> CONVEX_DEPLOY: Deploy Convex Backend
     CONVEX_DEPLOY --> CONVEX_LIVE: Get Production URL
@@ -66,10 +66,10 @@ stateDiagram-v2
     CONVEX_VERIFY --> CONVEX_OK2{Success?}
     CONVEX_OK2 -->|Yes| PHASE4
     CONVEX_OK2 -->|No| CONVEX_FAIL2: Deployment Failed
-    
+
     CONVEX_FAIL2 --> CONVEX_DEBUG: Check Logs
     CONVEX_DEBUG --> CONVEX_DEPLOY
-    
+
     PHASE4 --> VERCEL_SETUP: Phase 4: Frontend Setup
     VERCEL_SETUP --> VERCEL_ENVARS: Set Environment Variables
     VERCEL_ENVARS --> VERCEL_BUILD: Deploy Frontend
@@ -78,10 +78,10 @@ stateDiagram-v2
     VERCEL_VERIFY --> VERCEL_OK3{Success?}
     VERCEL_OK3 -->|Yes| PHASE5
     VERCEL_OK3 -->|No| VERCEL_FAIL3: Deployment Failed
-    
+
     VERCEL_FAIL3 --> VERCEL_DEBUG: Check Logs
     VERCEL_DEBUG --> VERCEL_BUILD
-    
+
     PHASE5 --> DNS_Q: Phase 5: Domain Config
     DNS_Q --> DNS_CHECK{Custom Domain?}
     DNS_CHECK -->|Yes| DNS_UPDATE: Update Nameservers
@@ -90,7 +90,7 @@ stateDiagram-v2
     DNS_WAIT --> DNS_VERIFY: Verify DNS
     DNS_SKIP --> PHASE6
     DNS_VERIFY --> PHASE6: Phase 6: Testing
-    
+
     PHASE6 --> TEST_AUTH: Test Auth Flow
     TEST_AUTH --> TEST_CAPTURE: Test Capture
     TEST_CAPTURE --> TEST_CLASSIFY: Test Classification
@@ -100,7 +100,7 @@ stateDiagram-v2
     TEST_FAIL --> TEST_DEBUG: Review Error Logs
     TEST_DEBUG --> TEST_FIX: Fix Issue
     TEST_FIX --> TEST_AUTH
-    
+
     MANUAL --> COMPLETE
     [*] --> COMPLETE
 ```
@@ -114,42 +114,44 @@ Each task follows this structure:
 ```typescript
 interface WorkflowTask {
   // Identification
-  id: string;                          // Unique task identifier (e.g., "1.1-anthropic-signup")
-  name: string;                        // Human-readable name
-  phase: number;                       // Which phase (1-6)
-  description: string;                 // What the task does
-  
+  id: string; // Unique task identifier (e.g., "1.1-anthropic-signup")
+  name: string; // Human-readable name
+  phase: number; // Which phase (1-6)
+  description: string; // What the task does
+
   // Timing & Dependencies
-  estimatedDuration: string;           // How long it takes (e.g., "3-5 min")
-  dependencies: string[];              // Task IDs this depends on (empty if none)
-  parallelizableWith: string[];        // Task IDs that can run concurrently
-  
+  estimatedDuration: string; // How long it takes (e.g., "3-5 min")
+  dependencies: string[]; // Task IDs this depends on (empty if none)
+  parallelizableWith: string[]; // Task IDs that can run concurrently
+
   // Data Flow
-  inputs: {                            // What the task needs
-    questionIds: string[];             // Which questions from QuestionManager
+  inputs: {
+    // What the task needs
+    questionIds: string[]; // Which questions from QuestionManager
     systemInputs: Record<string, any>;
   };
-  outputs: {                           // What the task produces
-    questionIds: string[];             // Questions answered/generated
-    secrets: Record<string, string>;   // Encrypted values (API keys, tokens)
-    config: Record<string, any>;       // Configuration values
+  outputs: {
+    // What the task produces
+    questionIds: string[]; // Questions answered/generated
+    secrets: Record<string, string>; // Encrypted values (API keys, tokens)
+    config: Record<string, any>; // Configuration values
   };
-  
+
   // Execution
   automation: {
-    type: 'automated' | 'manual' | 'hybrid';  // Playwright? User? Both?
-    script?: string;                   // Reference to automation script
-    userPrompt?: string;               // What to ask user if hybrid
+    type: "automated" | "manual" | "hybrid"; // Playwright? User? Both?
+    script?: string; // Reference to automation script
+    userPrompt?: string; // What to ask user if hybrid
   };
-  
+
   // Error Handling
   errorHandling: {
-    retryable: boolean;                // Can we retry this?
-    retryCount: number;                // Max retries
-    retryDelay: string;                // Delay between retries (exponential backoff)
-    fallback: string;                  // What to do if all retries fail
+    retryable: boolean; // Can we retry this?
+    retryCount: number; // Max retries
+    retryDelay: string; // Delay between retries (exponential backoff)
+    fallback: string; // What to do if all retries fail
   };
-  
+
   // Validation
   validation: {
     checks: Array<{
@@ -158,10 +160,10 @@ interface WorkflowTask {
     }>;
     errorMessage: string;
   };
-  
+
   // Metadata
-  tags: string[];                      // Labels (e.g., "account-creation", "blocker")
-  documentation?: string;              // Link to detailed docs
+  tags: string[]; // Labels (e.g., "account-creation", "blocker")
+  documentation?: string; // Link to detailed docs
 }
 ```
 
@@ -179,18 +181,22 @@ interface WorkflowTask {
   "name": "Create Anthropic Account & Get API Key",
   "phase": 1,
   "description": "Automated: Create Anthropic account, handle 2FA if needed, retrieve API key",
-  
+
   "estimatedDuration": "3-5 minutes",
   "dependencies": [],
-  "parallelizableWith": ["1.2-vercel-signup", "1.3-convex-signup", "1.4-github-token"],
-  
+  "parallelizableWith": [
+    "1.2-vercel-signup",
+    "1.3-convex-signup",
+    "1.4-github-token"
+  ],
+
   "inputs": {
     "questionIds": ["anthropic-email", "anthropic-password", "anthropic-phone"],
     "systemInputs": {
       "baseUrl": "https://console.anthropic.com"
     }
   },
-  
+
   "outputs": {
     "questionIds": ["anthropic-api-key", "anthropic-plan-tier"],
     "secrets": {
@@ -200,20 +206,20 @@ interface WorkflowTask {
       "anthropic-account-created-timestamp": "ISO8601"
     }
   },
-  
+
   "automation": {
     "type": "hybrid",
     "script": "scripts/signup/anthropic-signup.playwright.ts",
     "userPrompt": "If 2FA required, check your phone and enter the code in the browser window"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 3,
     "retryDelay": "exponential-10s",
     "fallback": "manual-browser-redirect"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -227,7 +233,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "API key validation failed. Please verify it in Anthropic console."
   },
-  
+
   "tags": ["account-creation", "api-key", "blocker"],
   "documentation": "SETUP-QUESTIONS.md#anthropic"
 }
@@ -241,18 +247,26 @@ interface WorkflowTask {
   "name": "Create Vercel Account & Get API Token",
   "phase": 1,
   "description": "Automated: Create Vercel account, retrieve API token, optionally connect GitHub",
-  
+
   "estimatedDuration": "3-5 minutes",
   "dependencies": [],
-  "parallelizableWith": ["1.1-anthropic-signup", "1.3-convex-signup", "1.4-github-token"],
-  
+  "parallelizableWith": [
+    "1.1-anthropic-signup",
+    "1.3-convex-signup",
+    "1.4-github-token"
+  ],
+
   "inputs": {
-    "questionIds": ["vercel-email", "vercel-password", "vercel-use-github-oauth"],
+    "questionIds": [
+      "vercel-email",
+      "vercel-password",
+      "vercel-use-github-oauth"
+    ],
     "systemInputs": {
       "baseUrl": "https://vercel.com"
     }
   },
-  
+
   "outputs": {
     "questionIds": ["vercel-api-token", "vercel-project-name"],
     "secrets": {
@@ -263,20 +277,20 @@ interface WorkflowTask {
       "github-oauth-configured": "boolean"
     }
   },
-  
+
   "automation": {
     "type": "hybrid",
     "script": "scripts/signup/vercel-signup.playwright.ts",
     "userPrompt": "If 2FA required or GitHub OAuth needed, complete in browser"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 3,
     "retryDelay": "exponential-10s",
     "fallback": "manual-browser-redirect"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -290,7 +304,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Vercel token validation failed. Please check account settings."
   },
-  
+
   "tags": ["account-creation", "api-token", "blocker"],
   "documentation": "SETUP-QUESTIONS.md#vercel"
 }
@@ -304,18 +318,22 @@ interface WorkflowTask {
   "name": "Create Convex Account & Get Deployment Key",
   "phase": 1,
   "description": "Automated: Create Convex Cloud account, retrieve deployment key for backend",
-  
+
   "estimatedDuration": "3-5 minutes",
   "dependencies": [],
-  "parallelizableWith": ["1.1-anthropic-signup", "1.2-vercel-signup", "1.4-github-token"],
-  
+  "parallelizableWith": [
+    "1.1-anthropic-signup",
+    "1.2-vercel-signup",
+    "1.4-github-token"
+  ],
+
   "inputs": {
     "questionIds": ["convex-email", "convex-password", "convex-project-name"],
     "systemInputs": {
       "baseUrl": "https://dashboard.convex.dev"
     }
   },
-  
+
   "outputs": {
     "questionIds": ["convex-deployment-key"],
     "secrets": {
@@ -325,20 +343,20 @@ interface WorkflowTask {
       "convex-project-created-timestamp": "ISO8601"
     }
   },
-  
+
   "automation": {
     "type": "hybrid",
     "script": "scripts/signup/convex-signup.playwright.ts",
     "userPrompt": "If email verification required, check inbox for confirmation link"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 3,
     "retryDelay": "exponential-10s",
     "fallback": "manual-browser-redirect"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -352,7 +370,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Convex deployment key validation failed. Please generate a new key."
   },
-  
+
   "tags": ["account-creation", "deployment-key", "blocker"],
   "documentation": "SETUP-QUESTIONS.md#convex"
 }
@@ -366,11 +384,15 @@ interface WorkflowTask {
   "name": "Generate GitHub Personal Access Token",
   "phase": 1,
   "description": "Automated: Login to GitHub, generate PAT with repo + actions scopes",
-  
+
   "estimatedDuration": "2-3 minutes",
   "dependencies": [],
-  "parallelizableWith": ["1.1-anthropic-signup", "1.2-vercel-signup", "1.3-convex-signup"],
-  
+  "parallelizableWith": [
+    "1.1-anthropic-signup",
+    "1.2-vercel-signup",
+    "1.3-convex-signup"
+  ],
+
   "inputs": {
     "questionIds": ["github-username", "github-email"],
     "systemInputs": {
@@ -378,7 +400,7 @@ interface WorkflowTask {
       "requiredScopes": ["repo", "workflow", "write:repo_hook"]
     }
   },
-  
+
   "outputs": {
     "questionIds": ["github-personal-access-token", "github-repository-name"],
     "secrets": {
@@ -389,20 +411,20 @@ interface WorkflowTask {
       "github-token-created-timestamp": "ISO8601"
     }
   },
-  
+
   "automation": {
     "type": "hybrid",
     "script": "scripts/signup/github-pat.playwright.ts",
     "userPrompt": "If 2FA required, enter code shown on GitHub"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 3,
     "retryDelay": "exponential-10s",
     "fallback": "manual-github-redirect"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -416,7 +438,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "GitHub token validation failed. Verify token scopes in GitHub settings."
   },
-  
+
   "tags": ["account-creation", "api-token", "optional"],
   "documentation": "SETUP-QUESTIONS.md#github"
 }
@@ -434,16 +456,21 @@ interface WorkflowTask {
   "name": "Gather Custom Domain Information",
   "phase": 2,
   "description": "Conditional: Ask about custom domain, registrar, nameserver access",
-  
+
   "estimatedDuration": "2-3 minutes",
-  "dependencies": ["1.1-anthropic-signup", "1.2-vercel-signup", "1.3-convex-signup", "1.4-github-token"],
+  "dependencies": [
+    "1.1-anthropic-signup",
+    "1.2-vercel-signup",
+    "1.3-convex-signup",
+    "1.4-github-token"
+  ],
   "parallelizableWith": [],
-  
+
   "inputs": {
     "questionIds": ["domain-use-custom"],
     "systemInputs": {}
   },
-  
+
   "outputs": {
     "questionIds": ["domain-name", "domain-registrar", "domain-has-access"],
     "secrets": {},
@@ -452,19 +479,19 @@ interface WorkflowTask {
       "domain-registrar-type": "string"
     }
   },
-  
+
   "automation": {
     "type": "manual",
     "userPrompt": "Do you want to use a custom domain? (yes/no)"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 1,
     "retryDelay": "manual",
     "fallback": "skip-domain-config"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -474,7 +501,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Invalid domain format. Please enter a valid domain (e.g., myapp.com)."
   },
-  
+
   "tags": ["configuration", "conditional", "manual"],
   "documentation": "SETUP-QUESTIONS.md#domain"
 }
@@ -488,18 +515,22 @@ interface WorkflowTask {
   "name": "Gather Deployment & Environment Settings",
   "phase": 2,
   "description": "Manual: Ask about target environment, monitoring, logging preferences",
-  
+
   "estimatedDuration": "1-2 minutes",
   "dependencies": ["2.1-domain-config"],
   "parallelizableWith": [],
-  
+
   "inputs": {
     "questionIds": [],
     "systemInputs": {}
   },
-  
+
   "outputs": {
-    "questionIds": ["deployment-environment", "monitoring-enabled", "logging-enabled"],
+    "questionIds": [
+      "deployment-environment",
+      "monitoring-enabled",
+      "logging-enabled"
+    ],
     "secrets": {
       "nextauth-secret": "GENERATED"
     },
@@ -509,19 +540,19 @@ interface WorkflowTask {
       "logging": "boolean"
     }
   },
-  
+
   "automation": {
     "type": "manual",
     "userPrompt": "Select your target environment and monitoring preferences"
   },
-  
+
   "errorHandling": {
     "retryable": false,
     "retryCount": 0,
     "retryDelay": "none",
     "fallback": "use-defaults"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -531,7 +562,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Invalid environment. Please select development, staging, or production."
   },
-  
+
   "tags": ["configuration", "manual"],
   "documentation": "SETUP-QUESTIONS.md#deployment"
 }
@@ -549,11 +580,11 @@ interface WorkflowTask {
   "name": "Deploy Convex Backend to Production",
   "phase": 3,
   "description": "Automated: Run 'convex deploy', verify deployment, get production URL",
-  
+
   "estimatedDuration": "5-7 minutes",
   "dependencies": ["1.3-convex-signup", "2.2-deployment-config"],
   "parallelizableWith": [],
-  
+
   "inputs": {
     "questionIds": ["convex-deployment-key"],
     "systemInputs": {
@@ -561,7 +592,7 @@ interface WorkflowTask {
       "convexPath": "./convex"
     }
   },
-  
+
   "outputs": {
     "questionIds": ["convex-production-url"],
     "secrets": {},
@@ -570,19 +601,19 @@ interface WorkflowTask {
       "convex-version": "string"
     }
   },
-  
+
   "automation": {
     "type": "automated",
     "script": "scripts/deploy/convex-deploy.ts"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 3,
     "retryDelay": "exponential-15s",
     "fallback": "manual-deploy-instructions"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -596,7 +627,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Convex deployment failed. Check logs above for details."
   },
-  
+
   "tags": ["deployment", "backend", "blocker"],
   "documentation": "PRODUCTION_DEPLOYMENT.md#convex"
 }
@@ -614,19 +645,23 @@ interface WorkflowTask {
   "name": "Create Vercel Project & Configure Environment",
   "phase": 4,
   "description": "Automated: Create Vercel project, set all required env vars including Convex URL",
-  
+
   "estimatedDuration": "2-3 minutes",
   "dependencies": ["1.2-vercel-signup", "3.1-convex-deploy"],
   "parallelizableWith": [],
-  
+
   "inputs": {
-    "questionIds": ["vercel-api-token", "vercel-project-name", "convex-production-url"],
+    "questionIds": [
+      "vercel-api-token",
+      "vercel-project-name",
+      "convex-production-url"
+    ],
     "systemInputs": {
       "githubToken": "from 1.4-github-token",
       "repoUrl": "derived from github-repository-name"
     }
   },
-  
+
   "outputs": {
     "questionIds": ["vercel-project-id"],
     "secrets": {},
@@ -635,19 +670,19 @@ interface WorkflowTask {
       "vercel-github-connected": "boolean"
     }
   },
-  
+
   "automation": {
     "type": "automated",
     "script": "scripts/deploy/vercel-project-setup.ts"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 2,
     "retryDelay": "exponential-10s",
     "fallback": "manual-vercel-setup"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -661,7 +696,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Vercel project setup failed. Verify credentials in Vercel dashboard."
   },
-  
+
   "tags": ["deployment", "frontend", "blocker"],
   "documentation": "PRODUCTION_DEPLOYMENT.md#vercel"
 }
@@ -675,18 +710,18 @@ interface WorkflowTask {
   "name": "Deploy Frontend to Vercel",
   "phase": 4,
   "description": "Automated: Trigger Vercel build & deployment from main branch",
-  
+
   "estimatedDuration": "3-5 minutes",
   "dependencies": ["4.1-vercel-project-setup"],
   "parallelizableWith": [],
-  
+
   "inputs": {
     "questionIds": ["vercel-api-token", "vercel-project-id"],
     "systemInputs": {
       "branch": "main"
     }
   },
-  
+
   "outputs": {
     "questionIds": ["vercel-live-url"],
     "secrets": {},
@@ -695,19 +730,19 @@ interface WorkflowTask {
       "vercel-build-time": "string"
     }
   },
-  
+
   "automation": {
     "type": "automated",
     "script": "scripts/deploy/vercel-deploy.ts"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 2,
     "retryDelay": "exponential-15s",
     "fallback": "manual-vercel-deploy"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -721,7 +756,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Vercel deployment failed. Check build logs in Vercel dashboard."
   },
-  
+
   "tags": ["deployment", "frontend", "blocker"],
   "documentation": "PRODUCTION_DEPLOYMENT.md#vercel"
 }
@@ -739,18 +774,18 @@ interface WorkflowTask {
   "name": "Configure Custom Domain DNS (Conditional)",
   "phase": 5,
   "description": "Manual + Async: Guide user to update nameservers, verify DNS propagation",
-  
+
   "estimatedDuration": "5 min setup + 2-48h propagation",
   "dependencies": ["2.1-domain-config", "4.2-vercel-deploy"],
   "parallelizableWith": [],
-  
+
   "inputs": {
     "questionIds": ["domain-name", "domain-registrar", "vercel-live-url"],
     "systemInputs": {
       "nameserverTargets": "Vercel's nameservers (auto-generated)"
     }
   },
-  
+
   "outputs": {
     "questionIds": ["domain-propagated"],
     "secrets": {},
@@ -759,19 +794,19 @@ interface WorkflowTask {
       "dns-propagation-check-timestamp": "ISO8601"
     }
   },
-  
+
   "automation": {
     "type": "manual",
     "userPrompt": "Update your domain registrar's nameservers to point to Vercel"
   },
-  
+
   "errorHandling": {
     "retryable": false,
     "retryCount": 0,
     "retryDelay": "none",
     "fallback": "use-vercel-url-for-now"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -781,7 +816,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "DNS not yet propagated. This is normal - can take 2-48 hours. You can use the Vercel URL in the meantime."
   },
-  
+
   "tags": ["domain", "manual", "async", "optional"],
   "documentation": "SETUP-QUESTIONS.md#domain"
 }
@@ -799,11 +834,11 @@ interface WorkflowTask {
   "name": "End-to-End System Testing",
   "phase": 6,
   "description": "Automated: Run auth flow, capture, classification tests",
-  
+
   "estimatedDuration": "5-10 minutes",
   "dependencies": ["4.2-vercel-deploy"],
   "parallelizableWith": [],
-  
+
   "inputs": {
     "questionIds": ["vercel-live-url", "anthropic-api-key"],
     "systemInputs": {
@@ -811,7 +846,7 @@ interface WorkflowTask {
       "testPassword": "generated-strong-password"
     }
   },
-  
+
   "outputs": {
     "questionIds": [],
     "secrets": {},
@@ -823,19 +858,19 @@ interface WorkflowTask {
       "test-timestamp": "ISO8601"
     }
   },
-  
+
   "automation": {
     "type": "automated",
     "script": "scripts/test/e2e-tests.playwright.ts"
   },
-  
+
   "errorHandling": {
     "retryable": true,
     "retryCount": 2,
     "retryDelay": "exponential-20s",
     "fallback": "manual-testing-guide"
   },
-  
+
   "validation": {
     "checks": [
       {
@@ -853,7 +888,7 @@ interface WorkflowTask {
     ],
     "errorMessage": "Tests failed. Review error logs to diagnose."
   },
-  
+
   "tags": ["testing", "validation", "blocker"],
   "documentation": "PRODUCTION_DEPLOYMENT.md#testing"
 }
@@ -867,22 +902,22 @@ interface WorkflowTask {
 interface WorkflowOrchestrator {
   // Execute task with dependency checking
   executeTask(taskId: string): Promise<TaskResult>;
-  
+
   // Check if task dependencies are met
   canExecuteTask(taskId: string): boolean;
-  
+
   // Execute multiple tasks in parallel
   executeParallel(taskIds: string[]): Promise<TaskResult[]>;
-  
+
   // Execute tasks sequentially
   executeSequential(taskIds: string[]): Promise<TaskResult[]>;
-  
+
   // Store outputs in QuestionManager
   saveOutputs(taskId: string, outputs: TaskOutput): Promise<void>;
-  
+
   // Retrieve task result
   getTaskResult(taskId: string): Promise<TaskResult | null>;
-  
+
   // Handle task failure with retry/fallback logic
   handleTaskFailure(taskId: string, error: Error): Promise<void>;
 }
@@ -892,34 +927,34 @@ async function runFullSetup() {
   // Phase 1: Run 4 tasks in parallel
   await orchestrator.executeParallel([
     "1.1-anthropic-signup",
-    "1.2-vercel-signup", 
+    "1.2-vercel-signup",
     "1.3-convex-signup",
-    "1.4-github-token"
+    "1.4-github-token",
   ]);
-  
+
   // Phase 2: Run 2 tasks sequentially
   await orchestrator.executeSequential([
     "2.1-domain-config",
-    "2.2-deployment-config"
+    "2.2-deployment-config",
   ]);
-  
+
   // Phase 3: Backend deploy
   await orchestrator.executeTask("3.1-convex-deploy");
-  
+
   // Phase 4: Frontend setup and deploy
   await orchestrator.executeSequential([
     "4.1-vercel-project-setup",
-    "4.2-vercel-deploy"
+    "4.2-vercel-deploy",
   ]);
-  
+
   // Phase 5: DNS (async, optional)
   if (customDomainEnabled) {
     orchestrator.executeTask("5.1-dns-config"); // Fire and forget
   }
-  
+
   // Phase 6: Testing
   await orchestrator.executeTask("6.1-e2e-testing");
-  
+
   console.log("✓ Setup Complete!");
 }
 ```
@@ -934,4 +969,3 @@ async function runFullSetup() {
 4. **Conditional Logic**: Use QuestionManager's ConditionalLogic field for branching
 5. **Audit Trail**: All steps logged with timestamps and user info
 6. **Encryption**: Secrets stored encrypted per QuestionManager security model
-

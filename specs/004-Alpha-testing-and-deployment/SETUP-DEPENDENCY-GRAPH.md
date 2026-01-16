@@ -5,81 +5,81 @@
 ```mermaid
 graph TD
     START([User Initiates Setup])
-    
+
     %% Phase 1: Parallel Account Creation (5-10 minutes)
     START --> Q1_EMAIL["Collect Email/Password<br/>for Each Account"]
-    
+
     Q1_EMAIL --> ANTH["Anthropic<br/>Account Signup<br/>~3 min"]
     Q1_EMAIL --> VERCEL["Vercel<br/>Account Signup<br/>~3 min"]
     Q1_EMAIL --> CONVEX["Convex<br/>Account Signup<br/>~3 min"]
     Q1_EMAIL --> GITHUB["GitHub Account<br/>Check/Setup<br/>~1 min"]
-    
+
     %% Anthropic produces API Key
     ANTH --> ANTH_KEY["Get Anthropic<br/>API Key"]
     ANTH_KEY --> ANTH_DONE["✓ Anthropic Ready"]
-    
+
     %% Vercel produces Token
     VERCEL --> VERCEL_TOKEN["Get Vercel<br/>API Token"]
     VERCEL_TOKEN --> VERCEL_DONE["✓ Vercel Ready"]
-    
+
     %% Convex produces Deployment Key
     CONVEX --> CONVEX_KEY["Get Convex<br/>Deployment Key"]
     CONVEX_KEY --> CONVEX_DONE["✓ Convex Ready"]
-    
+
     %% GitHub produces Token
     GITHUB --> GH_TOKEN["Get GitHub<br/>Personal Access Token"]
     GH_TOKEN --> GH_DONE["✓ GitHub Ready"]
-    
+
     %% Phase 2: Parallel with Phase 1 outputs
     ANTH_DONE --> COLLECT["Collect Remaining Config"]
     VERCEL_DONE --> COLLECT
     CONVEX_DONE --> COLLECT
     GH_DONE --> COLLECT
-    
+
     COLLECT --> DOMAIN{Use Custom<br/>Domain?}
     DOMAIN -->|Yes| DOMAIN_INFO["Collect Domain Info<br/>(name, registrar)"]
     DOMAIN -->|No| DOMAIN_DONE["✓ Domain Setup Skipped"]
     DOMAIN_INFO --> DOMAIN_DONE
-    
+
     DOMAIN_DONE --> DEPLOY_CONFIG["Collect Deployment Config<br/>(environment, monitoring, logging)"]
-    
+
     %% Phase 3: Prerequisite for Convex Deploy
     DEPLOY_CONFIG --> CONVEX_DEPLOY["Deploy Convex Backend<br/>~5 min"]
     CONVEX_DEPLOY --> CONVEX_URL["Get Production<br/>Convex URL"]
-    
+
     %% Phase 4: Vercel deploy needs Convex URL
     CONVEX_URL --> VERCEL_DEPLOY["Create Vercel Project<br/>+ Env Variables"]
     VERCEL_DEPLOY --> VERCEL_DEPLOY2["Deploy to Vercel<br/>~3-5 min"]
-    
+
     %% Phase 5: Post-deployment config
     VERCEL_DEPLOY2 --> DOMAIN_SETUP{Custom Domain?}
     DOMAIN_SETUP -->|Yes| DNS_CONFIG["Configure DNS<br/>Nameservers<br/>~2-24 hours"]
     DOMAIN_SETUP -->|No| DNS_DONE["✓ Using Vercel URL"]
     DNS_CONFIG --> DNS_DONE
-    
+
     %% Phase 6: Validation
     DNS_DONE --> VALIDATE["End-to-End<br/>Testing<br/>~5 min"]
     VALIDATE --> TEST1["✓ Auth Flow"]
     VALIDATE --> TEST2["✓ Capture Submission"]
     VALIDATE --> TEST3["✓ Classification"]
-    
+
     TEST1 --> SUCCESS([Setup Complete!])
     TEST2 --> SUCCESS
     TEST3 --> SUCCESS
-    
+
     %% Error paths
     ANTH -.->|2FA Needed| ANTH_2FA["[Manual] Complete 2FA"]
     ANTH_2FA --> ANTH_KEY
-    
+
     VERCEL -.->|2FA Needed| VERCEL_2FA["[Manual] Complete 2FA"]
     VERCEL_2FA --> VERCEL_TOKEN
-    
+
     GITHUB -.->|2FA Needed| GH_2FA["[Manual] Complete 2FA"]
     GH_2FA --> GH_TOKEN
-    
+
     CONVEX_DEPLOY -.->|Auth Failed| CONVEX_FIX["[Manual] Check Deployment Key"]
     CONVEX_FIX --> CONVEX_DEPLOY
-    
+
     style START fill:#90EE90
     style SUCCESS fill:#90EE90
     style ANTH_DONE fill:#87CEEB
@@ -97,19 +97,19 @@ graph TD
 
 ## Dependency Matrix (Text Form)
 
-| Task ID | Task Name | Duration | Depends On | Parallel With | Produces | Notes |
-|---------|-----------|----------|-----------|---------------|----------|-------|
-| 1.1 | Anthropic Account Signup | 3 min | None | 1.2-1.4 | API Key | Automated via Playwright |
-| 1.2 | Vercel Account Signup | 3 min | None | 1.1,1.3,1.4 | API Token | Automated via Playwright |
-| 1.3 | Convex Account Signup | 3 min | None | 1.1,1.2,1.4 | Deployment Key | Automated via Playwright |
-| 1.4 | GitHub Token (PAT) | 1 min | None | 1.1-1.3 | Access Token | Automated via Playwright |
-| 2.1 | Domain Interrogation | 3 min | 1.1-1.4 | None | Domain Config | Conditional: only if custom domain |
-| 2.2 | Deployment Config | 2 min | 2.1 | None | Env Vars | Environment, monitoring, logging |
-| 3.1 | Deploy Convex Backend | 5 min | 1.3, 2.2 | None | Convex URL | Must happen before Vercel |
-| 4.1 | Create Vercel Project | 2 min | 1.2, 3.1 | None | Project ID | Needs Convex URL for env vars |
-| 4.2 | Deploy to Vercel | 3-5 min | 4.1 | None | Live URL | Auto-builds from repo |
-| 5.1 | Configure DNS (if custom) | 2-24 hrs | 2.1, 4.2 | None | DNS Resolution | Manual: nameserver update (async) |
-| 6.1 | End-to-End Testing | 5 min | 4.2, 5.1 | None | Validation | Auth, capture, classification flows |
+| Task ID | Task Name                 | Duration | Depends On | Parallel With | Produces       | Notes                               |
+| ------- | ------------------------- | -------- | ---------- | ------------- | -------------- | ----------------------------------- |
+| 1.1     | Anthropic Account Signup  | 3 min    | None       | 1.2-1.4       | API Key        | Automated via Playwright            |
+| 1.2     | Vercel Account Signup     | 3 min    | None       | 1.1,1.3,1.4   | API Token      | Automated via Playwright            |
+| 1.3     | Convex Account Signup     | 3 min    | None       | 1.1,1.2,1.4   | Deployment Key | Automated via Playwright            |
+| 1.4     | GitHub Token (PAT)        | 1 min    | None       | 1.1-1.3       | Access Token   | Automated via Playwright            |
+| 2.1     | Domain Interrogation      | 3 min    | 1.1-1.4    | None          | Domain Config  | Conditional: only if custom domain  |
+| 2.2     | Deployment Config         | 2 min    | 2.1        | None          | Env Vars       | Environment, monitoring, logging    |
+| 3.1     | Deploy Convex Backend     | 5 min    | 1.3, 2.2   | None          | Convex URL     | Must happen before Vercel           |
+| 4.1     | Create Vercel Project     | 2 min    | 1.2, 3.1   | None          | Project ID     | Needs Convex URL for env vars       |
+| 4.2     | Deploy to Vercel          | 3-5 min  | 4.1        | None          | Live URL       | Auto-builds from repo               |
+| 5.1     | Configure DNS (if custom) | 2-24 hrs | 2.1, 4.2   | None          | DNS Resolution | Manual: nameserver update (async)   |
+| 6.1     | End-to-End Testing        | 5 min    | 4.2, 5.1   | None          | Validation     | Auth, capture, classification flows |
 
 ---
 
@@ -204,7 +204,7 @@ Phase 5 (DNS) Failures:
 ## Decision Points
 
 ```
-1. Custom Domain? 
+1. Custom Domain?
    YES → Include Task 2.1 (Domain Config)
    NO  → Skip Task 2.1, use Vercel default URL (https://[project].vercel.app)
 
@@ -227,6 +227,7 @@ Phase 5 (DNS) Failures:
 ## Timeline Scenarios
 
 ### Scenario A: Fully Automated, No Custom Domain
+
 ```
 T+0:00   Phase 1 starts (4 parallel signups)
 T+0:05   Phase 1 complete (all accounts + tokens collected)
@@ -239,6 +240,7 @@ TOTAL: ~27 minutes → LIVE 🎉
 ```
 
 ### Scenario B: Automated + Custom Domain
+
 ```
 T+0:00   Phases 1-4 same as Scenario A → T+0:22
 T+0:22   Phase 5 starts (user updates nameservers)
@@ -248,6 +250,7 @@ TOTAL: 27 min to working app + 2-48h for DNS (optional)
 ```
 
 ### Scenario C: Manual 2FA Required
+
 ```
 T+0:00   Phase 1 starts
 T+0:03   Anthropic needs 2FA → [MANUAL] User completes in browser
@@ -256,4 +259,3 @@ T+0:08   All signups complete
 T+0:13   Phases 2-6 continue as normal
 TOTAL: ~32 minutes (5 min delay for 2FA) → LIVE
 ```
-
