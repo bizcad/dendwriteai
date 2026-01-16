@@ -1,0 +1,43 @@
+CREATE TABLE [dbo].[SurveyQuestion](
+	[Id] [uniqueidentifier] NOT NULL,
+	[ClientCode] [nvarchar](10) NULL,
+	[SortOrder] [decimal](18, 2) NULL,
+	[Topic] [nvarchar](128) NULL,
+	[TabName] [nvarchar](20) NULL,
+	[TabNumber] [int] NULL,
+	[QuestionNumber] [nvarchar](10) NULL,
+	[ReportingPeriod] [nvarchar](max) NULL,
+	[ColumnName] [nvarchar](128) NULL,
+	[ColumnStatus] [nvarchar](20) NULL,
+	[DisplayType] [nvarchar](max) NULL,
+	[SqlDataType] [nvarchar](max) NULL,
+	[PocoType] [nvarchar](max) NULL,
+	[Source] [nvarchar](max) NULL,
+	[ValidationRules] [nvarchar](max) NULL,
+	[ValidationMessage] [nvarchar](max) NULL,
+	[QuestionLabelText] [nvarchar](128) NULL,
+	[QuestionText] [nvarchar](max) NULL,
+	[HelpText] [nvarchar](max) NULL,
+	[DefinedTerm] [nvarchar](max) NULL,
+	[Rationale] [nvarchar](max) NULL,
+	[DisplayState] [int] NULL,
+	[ComponentParams] [nvarchar](max) NULL,
+	[AnswerCount] [int] NULL,
+	[AnswerString] [nvarchar](max) NULL,
+	[ConditionalLogic] [nvarchar](max) NULL,
+	[Placeholder] [nvarchar](256) NULL,
+	[CssClass] [nvarchar](256) NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedDate] [datetime2](7) NULL,
+	[ModifiedBy] [nvarchar](100) NULL,
+	[ModifiedDate] [datetime2](7) NULL,
+	[Version] [int] NULL,
+	[ExpectedContentType] [nvarchar](100) NULL,
+	[ExpectedEnvelopeSchemaVersion] [int] NULL,
+	[RecordType] [nvarchar](32) NULL,
+ CONSTRAINT [PK_DataDictionary] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
