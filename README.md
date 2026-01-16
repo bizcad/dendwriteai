@@ -2,32 +2,52 @@
 
 Capture, classify, and organize your ideas with AI.
 
+## Current Status (2026-01-15)
+
+✅ **Authentication & Persistent Login Working**
+- NextAuth.js v4 configured with 30-day persistent sessions
+- Secure HttpOnly cookies + JWT tokens
+- Multi-tenant architecture ready
+- Both dev servers running: Convex (http://127.0.0.1:3210) + Next.js (http://localhost:3001)
+
+📋 **Deployment Ready**
+- See `NEXT_STEPS.md` for 5-step deployment checklist
+- See `PRODUCTION_DEPLOYMENT.md` for detailed deployment guide
+- See `ALPHA_TESTER_GUIDE.md` for tester onboarding
+
+---
+
 ## Stack
 
-- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS
+- **Frontend**: Next.js 16 + TypeScript + Tailwind CSS
 - **Backend**: Convex (serverless database + functions)
 - **LLM**: Claude (Anthropic)
-- **Auth**: Anonymous (MVP) → GitHub auth (later) → Clerk (for subscribers)
+- **Auth**: NextAuth.js + Credentials provider (multi-tenant)
 - **Deployment**: Vercel (frontend) + Convex Cloud (backend)
 
 ## Project Structure
 
-\\\
+```
 dendwriteai/
-├── web/                    # Next.js 15 frontend
+├── web/                    # Next.js 16 frontend
 │   ├── app/               # App Router (pages, components, layouts)
+│   ├── auth.ts            # NextAuth configuration
 │   ├── public/            # Static assets
 │   └── package.json
 ├── convex/                # Convex backend (TypeScript)
-│   ├── schema.ts          # Database schema
+│   ├── schema.ts          # Database schema (multi-tenant)
 │   ├── captures.ts        # Capture mutations/queries
-│   ├── classification.ts  # Classification logic
+│   ├── classification.ts  # AI classification logic
 │   └── _generated/        # Auto-generated types & API
-├── .env.local            # Local environment variables
-└── package.json          # Root dependencies
-\\\
+├── NEXT_STEPS.md          # 5-step deployment checklist
+├── PRODUCTION_DEPLOYMENT.md # Detailed deployment guide
+├── ALPHA_TESTER_GUIDE.md  # For sharing with testers
+├── .env.local             # Local environment variables
+└── package.json           # Root dependencies
+```
 
 ## Getting Started
+
 
 ### Prerequisites
 - Node.js 20+

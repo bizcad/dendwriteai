@@ -1,0 +1,61 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "DendWriteAI",
+    },
+    {
+      "path": "web",
+      "name": "Web (Next.js)",
+    },
+    {
+      "path": "convex",
+      "name": "Convex Backend",
+    },
+  ],
+  "settings": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "files.exclude": {
+      "**/.next": true,
+      "**/node_modules": true,
+      "**/.convex": true,
+    },
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+      "PowerShell": {
+        "source": "PowerShell",
+        "args": [
+          "-NoExit",
+          "-Command",
+          "& {. '${workspaceFolder}/scripts/Microsoft.PowerShell_profile.ps1'}",
+        ],
+      },
+    },
+    "terminal.integrated.env.windows": {
+      "DENDWRITEAI_ROOT": "${workspaceFolder}",
+    },
+    "powershell.cwd": "DendWriteAI",
+    "chat.tools.terminal.autoApprove": {
+      "New-Item": true,
+      "Out-Null": true,
+      "Add-Content": true,
+      "Test-Path": true,
+    },
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "tamasfe.even-better-toml",
+      "ms-vscode.powershell",
+    ],
+  },
+}

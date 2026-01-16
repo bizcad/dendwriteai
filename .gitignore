@@ -35,3 +35,6 @@ convex/_generated/
 # OS
 Thumbs.db
 .env.test.local
+
+# Session logging
+PromptTracking/

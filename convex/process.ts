@@ -5,17 +5,21 @@ import { getProvider } from "./llm_provider";
 const CONFIDENCE_THRESHOLD = 0.6;
 
 /**
- * Mutation: Classify all pending captures
+ * Mutation: Classify all pending captures for a tenant
  */
 export const classifyAllPending = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    tenantId: v.string(),
+  },
+  handler: async (ctx, { tenantId }) => {
     const pending = await ctx.db
       .query("captures")
-      .filter((q) => q.eq(q.field("status"), "pending"))
+      .withIndex("by_tenantId_status", (q) =>
+        q.eq("tenantId", tenantId).eq("status", "pending")
+      )
       .collect();
 
-    console.log(`Found ${pending.length} pending captures to classify`);
+    console.log(`Found ${pending.length} pending captures to classify for tenant ${tenantId}`);
 
     const results = [];
     const provider = getProvider();
@@ -41,6 +45,7 @@ export const classifyAllPending = mutation({
           status:
             result.confidence >= CONFIDENCE_THRESHOLD ? "success" : "error",
           reasoning: result.reasoning,
+          tenantId,
           createdAt: Date.now(),
         });
 
@@ -52,6 +57,7 @@ export const classifyAllPending = mutation({
             reason: result.reasoning,
             flaggedAt: Date.now(),
             confidence: result.confidence,
+            tenantId,
           });
         } else {
           // Route to appropriate category table
@@ -66,6 +72,7 @@ export const classifyAllPending = mutation({
             description: capture.text,
             confidence: result.confidence,
             sourceCapture: capture._id,
+            tenantId,
             extractedAt: Date.now(),
           });
         }

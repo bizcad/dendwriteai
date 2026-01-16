@@ -1,22 +1,7 @@
-# QuestionManager PowerShell Profile
+# DendWriteAI PowerShell Profile
 # This automatically loads when PowerShell starts in this workspace
 
-$QuestionManagerRoot = "G:\repos\dendwriteai"
-
-# Optional PowerShell Profile Configuration for dendwriteai Development
-# Add these aliases and functions to your PowerShell profile to enable Unix-style commands
-#
-# To use:
-# 1. Open PowerShell
-# 2. Run: $PROFILE (shows path to your profile file)
-# 3. Open that file in your editor (create it if it doesn't exist)
-# 4. Add the contents of this file to your profile
-# 5. Reload: . $PROFILE
-#
-# Then you can use Unix-style commands like:
-#   dotnet test ... | head -30
-#   dotnet test ... | tail -20
-#   (Get-Content file) | wc -l
+$DendWriteAIRoot = if ($env:DENDWRITEAI_ROOT) { $env:DENDWRITEAI_ROOT } else { "G:\repos\dendwriteai" }
 
 # ========== Shell Command Functions ==========
 # Equivalent to Unix 'head' command - shows first 10 lines
@@ -98,34 +83,76 @@ function grep {
     }
 }
 
-# ========== QuestionManager Specific Functions ==========
-# Quick navigation to project root
-function cdqm {
-    Set-Location "G:\repos\QuestionManager"
+# ========== DendWriteAI Project Navigation ==========
+
+# Navigate to project root
+function cddend {
+    Set-Location $DendWriteAIRoot
 }
 
-# Quick test commands
-function test-fast {
-    dotnet test QuestionManager.slnx --filter "Category!=E2E"
+# Navigate to web folder (Next.js)
+function cdweb {
+    Set-Location "$DendWriteAIRoot\web"
 }
 
-function test-e2e {
-    dotnet test QuestionManager.slnx --filter "TestCategory=Smoke"
+# Navigate to convex folder (Convex backend)
+function cdconvex {
+    Set-Location "$DendWriteAIRoot\convex"
 }
 
-function test-build {
-    dotnet build QuestionManager.slnx -clp:Summary
+# ========== DendWriteAI Development Commands ==========
+
+# Start Convex dev server (must be run from project root)
+function convex-dev {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '')]
+    param()
+    Write-Host "Starting Convex dev server..." -ForegroundColor Cyan
+    Write-Host "Changing to: $DendWriteAIRoot" -ForegroundColor Gray
+    Set-Location "$DendWriteAIRoot"
+    Write-Host "Running: npx convex dev" -ForegroundColor Gray
+    npx convex dev
 }
 
-# Write confirmation message
-Write-Host "✓ QuestionManager development aliases loaded" -ForegroundColor Green
-Write-Host "  Available commands: head, tail, wc, cdqm, test-fast, test-e2e, test-build" -ForegroundColor Cyan
+# Start Next.js dev server (must be run from web folder)
+function web-dev {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '')]
+    param()
+    Write-Host "Starting Next.js dev server..." -ForegroundColor Cyan
+    Write-Host "Changing to: $DendWriteAIRoot\web" -ForegroundColor Gray
+    Set-Location "$DendWriteAIRoot\web"
+    Write-Host "Running: npm run dev" -ForegroundColor Gray
+    npm run dev
+}
+
+# Install npm dependencies
+function install-all {
+    Write-Host "Installing dependencies..." -ForegroundColor Cyan
+    Push-Location "$DendWriteAIRoot\web"
+    npm install
+    Pop-Location
+}
+
+# ========== Initialization Banner ==========
+
+# Suppress QuestionManager message if it was loaded
+function Clear-QuestionManagerAliases {
+    if (Test-Path function:cdqm -ErrorAction SilentlyContinue) {
+        Remove-Item function:cdqm -ErrorAction SilentlyContinue
+    }
+}
+
+# Clear any previous project aliases
+Clear-QuestionManagerAliases
+
+Write-Host "✓ DendWriteAI development aliases loaded" -ForegroundColor Green
+Write-Host "  Navigation: cddend, cdweb, cdconvex" -ForegroundColor Cyan
+Write-Host "  Dev servers: convex-dev, web-dev" -ForegroundColor Cyan
+Write-Host "  Utilities: head, tail, wc, grep, install-all" -ForegroundColor Cyan
 
 # Load session logging
-# Only load if we're in the QuestionManager directory
-if ((Get-Location).Path -like "*QuestionManager*") {
+if ((Get-Location).Path -like "*dendwriteai*" -or (Get-Location).Path -like "*DendWriteAI*") {
     try {
-        Push-Location $QuestionManagerRoot
+        Push-Location $DendWriteAIRoot
         
         # Load session logging quietly
         if (Test-Path ".\PromptTracking\session-log.ps1") {
@@ -138,6 +165,9 @@ if ((Get-Location).Path -like "*QuestionManager*") {
                 Write-Host "log-help" -ForegroundColor Cyan
             }
         }
+    }
+    catch {
+        # Silently continue if session logging fails
     }
     finally {
         Pop-Location

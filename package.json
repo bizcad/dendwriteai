@@ -1,10 +1,14 @@
 {
   "name": "dendwriteai",
   "version": "1.0.0",
-  "description": "",
+  "description": "DendwriteAI - Multi-tenant idea capture and AI classification app",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cd web && npm run dev",
+    "build": "cd web && npm run build",
+    "start": "cd web && npm run start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "convex:dev": "convex dev"
   },
   "keywords": [],
   "author": "",

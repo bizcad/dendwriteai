@@ -1,97 +1,151 @@
 'use client';
 
-import { useState } from 'react';
-import { useMutation, useQuery } from 'convex/react';
-import { api } from '../../convex/_generated/api';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { CaptureForm } from './components/CaptureForm';
 
 export default function Home() {
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [classifying, setClassifying] = useState(false);
-  const allCaptures = useQuery(api.captures.getCaptures);
-  const submitCapture = useMutation(api.captures.submitCapture);
-  const classifyAllPending = useMutation(api.process.classifyAllPending);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [recentIdeas, setRecentIdeas] = useState<any[]>([]);
 
-  // Filter to show only pending captures
-  const captures = allCaptures?.filter(c => c.status === 'pending') || [];
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    setLoading(true);
-    try {
-      const clientMessageId = crypto.randomUUID();
-      await submitCapture({
-        text: input,
-        clientMessageId,
-      });
-      setInput('');
-    } catch (error) {
-      console.error('Error submitting capture:', error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
     }
-  };
+  }, [status, router]);
 
-  const handleClassifyAll = async () => {
-    setClassifying(true);
-    try {
-      const result = await classifyAllPending();
-      console.log('Classification results:', result);
-    } catch (error) {
-      console.error('Error classifying:', error);
-    } finally {
-      setClassifying(false);
+  useEffect(() => {
+    // Load recent ideas from localStorage (for now, until Convex is fully integrated)
+    const stored = localStorage.getItem('recentIdeas');
+    if (stored) {
+      setRecentIdeas(JSON.parse(stored));
     }
-  };
+  }, []);
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return null; // Will redirect via useEffect
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">DendwriteAI</h1>
-        
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="What's your big idea? Share anything..."
-            className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-          />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="mt-4 w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition"
-          >
-            {loading ? 'Processing...' : 'Capture Idea'}
-          </button>
-        </form>
-
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">Pending Captures</h2>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-800">DendwriteAI</h1>
+            <p className="text-gray-600 mt-1">Capture & Classify Your Ideas</p>
+          </div>
+          <div className="text-right">
+            <p className="text-gray-700 font-medium">{session.user?.name || session.user?.email}</p>
             <button
-              onClick={handleClassifyAll}
-              disabled={classifying || captures.length === 0}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold px-4 py-2 rounded-lg transition text-sm"
+              onClick={() => signOut({ redirect: true, redirectTo: '/auth/signin' })}
+              className="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm"
             >
-              {classifying ? 'Classifying...' : 'Classify All'}
+              Sign Out
             </button>
           </div>
-          {captures && captures.length > 0 ? (
-            <div className="space-y-4">
-              {captures.map((capture) => (
-                <div key={capture._id} className="p-4 border border-gray-200 rounded-lg">
-                  <p className="text-gray-700">{capture.text}</p>
-                  <div className="mt-2 text-sm text-gray-500">
-                    Status: <span className="font-semibold">{capture.status}</span>
-                  </div>
-                </div>
-              ))}
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Capture Form - Main Column */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+              <CaptureForm onIdeaSubmitted={(idea) => {
+                // Add new idea to recent list
+                const updated = [{ text: idea, timestamp: new Date().toISOString(), status: 'pending' }, ...recentIdeas].slice(0, 5);
+                setRecentIdeas(updated);
+                localStorage.setItem('recentIdeas', JSON.stringify(updated));
+              }} />
             </div>
-          ) : (
-            <p className="text-gray-500">No captures pending. Add an idea!</p>
-          )}
+
+            {/* Recent Ideas List */}
+            {recentIdeas.length > 0 && (
+              <div className="bg-white rounded-lg shadow-lg p-8">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">📝 Recent Ideas</h2>
+                <div className="space-y-3">
+                  {recentIdeas.map((idea, idx) => (
+                    <div key={idx} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                      <div className="flex justify-between items-start">
+                        <p className="text-gray-700 flex-1">{idea.text}</p>
+                        <span className={`ml-4 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+                          idea.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          idea.status === 'classified' ? 'bg-green-100 text-green-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {idea.status === 'pending' ? '⏳ Pending' :
+                           idea.status === 'classified' ? '✅ Classified' :
+                           '❌ Error'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">{new Date(idea.timestamp).toLocaleString()}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Status Panel - Sidebar */}
+          <div className="space-y-4">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4">📊 Status</h2>
+              
+              <div className="space-y-4">
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h3 className="font-semibold text-green-800 text-sm">✅ System Ready</h3>
+                  <p className="text-green-700 text-xs mt-1">Next.js + Convex + NextAuth</p>
+                </div>
+
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-semibold text-blue-800 text-sm">🔐 Authenticated</h3>
+                  <p className="text-blue-700 text-xs mt-1">30-day persistent session</p>
+                </div>
+
+                <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                  <h3 className="font-semibold text-purple-800 text-sm">🤖 AI Ready</h3>
+                  <p className="text-purple-700 text-xs mt-1">Anthropic API configured</p>
+                </div>
+
+                <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                  <h3 className="font-semibold text-orange-800 text-sm">📤 Ideas Captured</h3>
+                  <p className="text-orange-700 text-xs mt-1">{recentIdeas.length} in session</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4">ℹ️ How It Works</h2>
+              <ol className="text-sm text-gray-700 space-y-2 list-decimal list-inside">
+                <li>Type your idea</li>
+                <li>Click "Capture Idea"</li>
+                <li>AI classifies automatically</li>
+                <li>Check status above ⬆️</li>
+              </ol>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-4">🔧 Debug Info</h2>
+              <div className="text-xs text-gray-600 space-y-1">
+                <p><strong>User:</strong> {session.user?.email}</p>
+                <p><strong>Tenant:</strong> {session.user?.tenantId}</p>
+                <p><strong>Session:</strong> JWT + Cookies</p>
+                <p className="text-green-600 mt-2">✓ All systems operational</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

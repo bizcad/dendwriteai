@@ -1,18 +1,3 @@
-## Error Type
-Console Error
-
-## Error Message
-[CONVEX M(captures:submitCapture)] [Request ID: 796e893a31743fbe] Server Error
-Uncaught Error: (r, o) => (globalThis.console.warn(
-    `Convex functions should not directly call other Convex functions. Consider calling a helper function instead. e.g. \`export const foo = ${e}(...); await foo(ctx);\` is not supported. See https://docs.convex.dev/production/best-practices/#use-helper-functions-to-write-shared-code`
-  ), t(r, o)) is not a functionReference
-    at handler (../convex/captures.ts:19:17)
-
-
-
-    at handler (../convex/captures.ts:19:17)
-
-Next.js version: 16.1.2 (Turbopack)
 <#
 Session Log Appender
 Usage:  
