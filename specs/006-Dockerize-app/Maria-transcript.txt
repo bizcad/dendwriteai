@@ -1,0 +1,812 @@
+# Docker MCP transcript
+<!--Begin Transcript-->
+Why Docker MCP changes everything
+0:00
+You guys.
+0:01
+Docker just dropped a new standard for AI tools and it completely changes
+0:05
+how we build things.
+0:06
+They took the raw MCP protocol and they turned it into something
+0:10
+that anyone can use.
+0:11
+You just click on a few buttons
+0:13
+and you give your agents an entire collection of superpowers.
+0:17
+You don't need any terminals or memorizing Docker commands.
+0:20
+Now everything is done through a friendly interface that even grandma approves.
+0:25
+You can't remember where you saved your API keys and it's okay.
+0:29
+You don't need them anymore.
+0:30
+You don't have the time to search for reliable servers.
+0:33
+You don't have to.
+0:34
+They're all bundled in one catalog with verified publishers.
+0:38
+You just pick and choose.
+0:39
+And for the first time ever, these friendly tools were made
+0:42
+both for AI users and AI developers.
+0:45
+So not only can you pull them into desktop assistants like Cursor and Claude, but
+0:51
+you can also integrate them in your own
+0:54
+AI projects that you built in VSCode.
+0:58
+So today I will show you three demos.
+1:00
+It will start by setting up Docker MCP for Cursor and Claude.
+1:04
+We will then integrate it into a basic Python application.
+1:09
+And then finally we will combine it in a full stack professional GUI
+1:15
+application, our own supercharged ChatGPT.
+1:19
+So if you're ready, let's roll.
+1:28
+So let's quickly see how it works.
+1:29
+Before we dive into details, let's say you're using something like Claude,
+1:34
+and you want your AI agent to be a bit more powerful
+1:38
+instead of just chatting with it.
+1:39
+You also want it to access your stripe account and read from it.
+1:43
+Check your invoices, create new ones, generate reports, and so on.
+1:47
+But why would you do that - if Calude can?
+1:50
+So first we will make sure we have the latest version of Docker
+1:54
+desktop installed.
+1:56
+4.54 on my end.
+1:58
+Then we will open the MCP toolkit tab on the left.
+What MCP actually is (in plain English)
+2:03
+And if you're not sure what MCP means, it is a book of rules
+2:08
+that allows AI agents to read from external resources.
+2:11
+So, for example, your chats on discord or your financial records on stripe,
+2:16
+or your emails on Gmail.
+2:17
+We do it from special servers, the Discord or Stripe or Gmail designed
+2:22
+using the tools that they've built, like read emails or list contacts and so on.
+Docker MCP Toolkit & Catalog overview
+2:27
+Now, the first thing we'll do in our toolkit is look at the clients, where
+2:32
+we can either download or connect to all kinds of AI desktop apps.
+2:36
+In my case, I'll go for Claude as well as for Cursor.
+2:40
+And then last but not least, I will go for visual Studio Code.
+2:44
+Let's connect to it.
+2:45
+And while Cursor and VSCode are free,
+2:48
+you will need a pro account for Claude, at least for its MCP features.
+2:53
+I've purchased it especially for this video so that you don't have to.
+2:56
+Now, once our connection is successful, we'll go ahead and relaunch
+2:59
+one of these apps.
+3:00
+In my case, I'll go for Cursor.
+3:03
+Then we will navigate to file followed by preferences,
+Connecting Claude, Cursor, and VS Code
+3:07
+followed by Cursor settings and then tools and MCP and beautiful.
+3:12
+We already see MCP Docker available right over here.
+3:16
+And we also see that we have six different tools installed automatically.
+3:20
+Now these are special smart MCP tools that Docker provides.
+3:25
+They don't come from Stripe or Gmail but they are automatically embedded
+3:29
+inside the toolkit.
+3:30
+So what does it mean?
+3:31
+Well, if we close the settings tab and we start a new chat with control I,
+3:36
+we can then ask our agents to find the official stripe MCP server.
+3:42
+And then Cursor will use one of the Docker MCP tools.
+3:46
+This time MCP find to proceed with our task.
+3:50
+So let's quickly give it permissions. And beautiful.
+3:52
+We see that it found two different servers.
+3:55
+One of them is local and the other one is remote.
+3:58
+So let's quickly ask it to go for the remote server.
+4:02
+And now it will need another smart tool, this time MCP add.
+4:07
+And while we give it permissions,
+Local vs Remote MCP servers (key differences)
+4:09
+let's quickly talk about the difference between local servers and remote ones.
+4:12
+Now back in Docker Desktop we see that both servers are official.
+4:16
+Given this known publisher icon, the local server is something you download
+4:22
+and then it runs on your system while the remote server
+4:25
+runs somewhere far away on Stripe's cloud.
+4:29
+Given this cloud icon meaning you're not downloading it,
+4:32
+and unlike the local server, this one is fully maintained by stripe.
+4:37
+They are constantly enhancing it and patching it so it is always up to date.
+4:41
+You connect to it once and then you forget about it.
+4:44
+In contrast, the local server is not automatically updated.
+4:48
+If there is a new version, it is up to you to upgrade it
+4:51
+by downloading it again and again and again.
+4:54
+Another benefit of remote servers is advanced security,
+4:57
+protecting you from prompt injections and all kinds of malicious inputs.
+5:01
+And then finally, remote servers don't need secrets
+5:04
+or API keys while the local servers do.
+5:08
+If it sounds a bit wild, let's see how it works right away.
+5:13
+So back in Cursor
+5:14
+we will allow it to open the browser authentication and we'll hit submit.
+5:18
+Then we will simply log in to our account like we usually do.
+5:23
+I will log into my fake bank account which is a very appropriate name.
+5:27
+And I will hit authorize.
+5:28
+Then don't forget to hit on Open Docker Desktop because this is very important.
+5:33
+Now if you're having some issues with the Cursor authentication
+5:36
+you can also authenticate through Docker desktop,
+5:39
+just expand the server and then go to the configurations tab.
+5:43
+Clicking on this authorize with the stripe OAuth provider link.
+5:48
+And then you can hit authorize right over here.
+5:51
+And it will take you
+5:52
+to the exact same browser page where you can authenticated from here.
+5:56
+But if everything fails, okay.
+5:59
+And the remote server goes buggy for some reason,
+6:02
+then you can always connect to the local one.
+6:05
+So let's find this one.
+6:06
+uhh, again.
+6:08
+This time not the cloud one, but the local one.
+6:11
+And then inside the configuration stab we will provide a secret key.
+6:15
+And here you paste your secret key. Where do you find it.
+6:18
+Well back in your stripe dashboard just type
+6:22
+API and follow this developers API keys link.
+6:26
+Here we will scroll down and we will create a secret key.
+6:30
+We will do so for building your own integration.
+6:34
+We will give this key some kind of a name let's call it Cursor
+6:39
+okay let's create it.
+6:40
+Then we will copy it and we will paste it inside our secret key section.
+6:45
+And we'll hit on this checkmark. Beautiful.
+6:48
+Now we can't access this key.
+6:50
+We cannot see it. It is absolutely blocked.
+6:52
+It is hidden even from us.
+6:54
+And we created this thing. So this is quite secure.
+6:57
+And it's just a nice alternative in case the remote server goes down or something
+7:01
+goes wrong.
+7:02
+Now a quick troubleshooting note before we move on.
+7:05
+If you properly set up your servers, but you still cannot see them in your My
+7:08
+Servers tab, let's go back to the catalog and let's add them manually.
+7:13
+We will do so by typing stripe, and we will click on this plus icon to add
+7:17
+these servers. We'll do it for both of them.
+7:20
+And it happens because the MCP toolkit is still in beta
+7:23
+so they're still working on it.
+7:24
+Now once we fix the issues with my servers,
+7:27
+we can then go back to Cursor where we have 31 tools and not just six.
+7:32
+Most of them are stripe tools. Great.
+7:35
+So now we can close these settings.
+7:37
+We can start a new chat and we can then ask Cursor,
+Stripe MCP demo: real data, real actions
+7:40
+do I have any unpaid invoices on stripe.
+7:44
+And okay it found an invoice.
+7:46
+I have one unpaid invoice for the amount of $1,000
+7:50
+from a customer that ends with B4Y. Now
+7:54
+This is not the customer
+7:55
+name, this is just a unique ID that we are using for confidentiality.
+7:59
+If we are now navigating to my stripe account specifically to my open invoices,
+8:04
+we see that I have one open for the amount of 1,000 USD.
+8:09
+Amazing.
+8:09
+So Cursor does have access to my account, but here's something even cooler.
+Using the same MCP tools across AI agents
+8:14
+If now we are opening Claude, then we don't need to set up anything,
+8:19
+we can immediately ask it to list all my customers and products on stripe
+8:26
+and Beautiful.
+8:27
+It found two customers and one of them ends with b4y,
+8:31
+which is a perfect match to our Cursor results.
+8:34
+Amazing.
+8:35
+So now what are we going to do is we're going to ask Claude
+8:39
+to create a new invoice for customer one.
+8:43
+The other guy that's right over here for the product of AI consulting.
+8:48
+Okay, let's give it a run and perfect.
+8:51
+The invoice was officially created and we can view it right over here.
+8:55
+Okay. There you go.
+8:57
+We have $500 that Eugene Krabs owes me.
+9:00
+If we refresh our open invoices, we now have two of them.
+9:04
+Amazing.
+9:05
+But now the final part of our demonstration will go back to Cursor,
+9:10
+and we'll ask it, were there any updates since the last time we checked?
+9:15
+Let's see what it says.
+9:16
+Let's expand it.
+9:18
+Let's scroll up and okay, we have a new unpaid invoice
+9:22
+for the amount of $500 for a customer that ends with 3iD.
+9:27
+Amazing.
+9:28
+So we have both of our agents interacting with my stripe account in real time.
+How Docker acts as a single MCP gateway
+9:33
+Wow. Now what happens under the hood is we are setting.
+9:37
+Docker is a gatekeeper between MCP servers and AI applications.
+9:42
+It acts as sort of a middleman.
+9:45
+So in terms of Cursor, it doesn't really know
+9:48
+that three servers from three different providers are involved.
+9:52
+That's because the only thing it communicates with is Docker.
+9:56
+It doesn't count
+9:57
+three tools for Gmail and 22 tools for stripe, and 20 tools for discord.
+10:02
+Instead, it counts 45 tools for Docker,
+10:07
+plus the six smart tools that we got automatically.
+10:10
+Okay, but what if we don't care about using MCP servers?
+10:15
+What if we want to plug them into our own applications?
+10:18
+For example, let's say you're building a custom
+10:21
+AI app like ChatGPT and you want your users to enjoy Dockers
+10:25
+MCP catalog.
+10:26
+For this,
+MCP inside your own Python app (VS Code)
+10:27
+we will switch to good old VSCode and we will leverage Dockers MCP gateway,
+10:32
+which is basically our catalog, but packaged in a container.
+10:35
+So let's quickly clone some starter files from my GitHub repository.
+10:40
+There you go. Docker MCP GUI App
+10:42
+You can find the link in the description.
+10:44
+We will click on code and it will copy the https address.
+10:49
+Then in our VSCode terminal
+10:52
+we will clone it with git clone followed by the address.
+10:56
+And we see that our project folder has two applications.
+11:00
+So let's start with the MCP demo app, which is the bare
+11:03
+minimum we need to run MCP with Docker.
+11:07
+So let's go ahead and open our Docker compose file
+11:10
+where we set different components of our app.
+11:13
+So if you are completely new to this, check out one of my previous Docker
+11:17
+tutorials.
+11:18
+Otherwise I will briefly explain it here and let me make things a bit smaller.
+11:22
+Now in Docker compose we will need three different services
+11:25
+or three independent components of the app.
+11:29
+The first one is the interface that users can access.
+11:33
+This is how users communicate with the app, in our case just through the console.
+11:37
+It's a simple demo, so this is all we need.
+11:40
+Next we have a gateway for local servers and it looks like that.
+11:45
+And then finally
+11:46
+we have a gateway for remote servers, and it looks similar to the local one.
+11:51
+But there is a few quirks here that we will discuss shortly.
+11:54
+Now when we access our local servers, in my case, DuckDuckGo and stripe,
+12:00
+we only specified their names, and we also mention that their secrets
+12:05
+are configured inside Docker desktop like we've done earlier with stripe.
+12:10
+We stored the secret key.
+12:12
+Actually, let me pull it out.
+12:13
+We went to Docker desktop, the local server,
+12:16
+and in the configuration tab we have this super secret secret key.
+12:21
+Great.
+12:21
+Now the way we talk to these servers is through a port on our system.
+12:27
+In my case, port 9011.
+12:30
+This is where our local servers live.
+12:33
+The remote ones, on the other hand, are communicating through port 8080.
+12:39
+And we're not just specifying their names like we've done over here,
+12:44
+but we are also including them
+12:46
+in a special catalog file that you can find in the same folder.
+12:50
+It's called catalog Yaml.
+12:52
+And the idea is we register each server separately.
+12:57
+Okay.
+12:58
+We have huggingface here and we have the stripe remote server right below it.
+13:03
+And we don't just specify the name, but we also specify the URL of these servers.
+13:08
+How do we find this URL.
+13:10
+Well we'll just go to Docker Desktop.
+13:12
+We will pull, let's say the Huggingface server.
+13:14
+And then in the overview section you find a link to the documentation.
+13:18
+Then we will scroll down and we will open the Visual Studio Code
+13:23
+tab where you can of course find this URL right over here.
+13:27
+Now another important component of this
+13:29
+catalog file is this secret key authorization.
+13:33
+So when we embed these servers into our personal applications,
+13:37
+the browser authentication that we've used earlier
+13:40
+is not going to work, at least not at this point in time.
+13:43
+So if we want to access our remote stripe account,
+13:48
+we will need to copy our secret key from earlier.
+13:52
+I have it right over here and it will paste it in the file
+13:55
+replacing this placeholder with it like so.
+13:59
+Now usually we don't store it here directly
+14:02
+because this is this is very confidential information.
+14:06
+I put it here just to keep things simple.
+14:08
+But I will show you a safer spot to store it shortly.
+14:12
+Another thing we need is a Dockerfile where we include instructions
+14:15
+for our container like installing Python and Pip installing a bunch of modules,
+14:21
+and even running App.py, which is the last file we need.
+14:25
+So let's quickly open it.
+14:26
+And as you may guess, this is where our Python application lives now.
+Running MCP tools via code
+14:31
+In my case, I created a special function to call different tools
+14:35
+from different servers.
+14:36
+You can use it for any kind of tool from either remote or local servers,
+14:41
+and you can call it with arguments or without arguments.
+14:45
+It's a very versatile function and please feel free to adopt it.
+14:48
+But before you call it, make sure that you set up a proper URL
+14:53
+for your remote and local gateways so
+14:56
+the port number as well as the service
+14:59
+name must be a perfect match to what we have in Docker compose.
+15:03
+For example, if we set our gateway
+15:06
+local service to the port of 9011,
+15:11
+that's exactly what we write inside API.
+15:14
+You also need to know the name of the tool that you'd like to use.
+15:18
+So let's scroll down to this section.
+15:21
+And each and every tool call is separated by a whole bunch of hashtags.
+15:26
+So for example here we are calling the list customer tools from stripe.
+15:31
+And this tool doesn't expect any arguments.
+15:34
+But on the other hand, the search tool from DuckDuckGo
+15:38
+expects some kind of a search keyword in our case “cats”.
+15:42
+Now I will show you where
+15:44
+to find all these tool names and all their details shortly.
+15:47
+But for now, let's quickly run this app.
+15:50
+Mind you, because of how Docker structured things,
+15:52
+we don't even mention stripe or DuckDuckGo by name.
+15:57
+Okay, we skip the server names altogether and we only use the tool names because
+16:02
+again, as far as VSCode is concerned, the only server that exists is MCP Docker.
+16:08
+There's no such thing
+16:09
+as stripe or DuckDuckGo because only Docker knows that they exist.
+16:13
+Great.
+16:14
+So now let's pull up some kind of a terminal.
+16:16
+Let's create a new one.
+16:18
+Oh no, not a PowerShell one.
+16:20
+Okay, a WSL one.
+16:22
+And let's make sure we are in the correct directory.
+16:24
+So it will navigate to cd mcp demo app.
+16:29
+And from here we can run our demo application
+16:32
+with Docker compose up dash dash build and perfect.
+16:38
+Let's have a look at the results.
+16:40
+Just going to increase everything. Great.
+16:42
+So the list customers tool from stripe, both the local
+16:46
+and the remote returned the exact same result.
+16:49
+Here's our Bruce Wayne ID and here's our
+16:53
+what was it Eugene Crab ID?
+16:56
+So stripe officially works, but how about DuckDuckGo?
+16:59
+And okay, it found ten search results for Cat.
+17:03
+Great. And how about hugging face?
+17:05
+Let's scroll up.
+17:06
+Beautiful.
+17:07
+It found two papers that match the query Dolphins.
+17:11
+Amazing.
+17:12
+So now that we roughly know how these MCP tools work, let's
+17:16
+go ahead and combine them in a proper AI chat application.
+17:21
+For this, we will switch to the complete app right beside our MCP demo.
+17:25
+And this is a public template that I designed especially for you guys.
+17:29
+It is a solid foundation for professional AI assistants,
+17:33
+so please don't be shy to use it.
+17:36
+And what I did here is combining the new MCP functionality
+Full-stack AI app with MCP + Model Runner
+17:41
+with my full stack application from previous tutorials.
+17:45
+I already showed you how to build it.
+17:47
+Okay, you may remember it.
+17:49
+I showed it in this video and we did it step by step.
+17:52
+Absolutely from scratch.
+17:54
+We used Docker Model Runner for this one and now we are just embedding Docker
+17:59
+MCP in it.
+18:00
+And of course including links both to this tutorial and to this GitHub repository.
+18:05
+But everything you need
+18:07
+is already on your computer and we just need to slightly set it up.
+18:11
+Now the first thing we'll do here is we will rename our example.env and file
+18:17
+that is too zoomed in okay.
+18:19
+We will rename this file to simply dot env.
+18:22
+And then we will copy our stripe secret key from earlier.
+18:28
+And we will then paste it inside this dot env file
+18:31
+replacing our placeholder right over here.
+18:34
+Beautiful.
+18:35
+So now instead of hard coding our secret key
+18:39
+inside catalog Yaml like we've done earlier,
+18:43
+we are simply assigning it to an environment variable
+18:47
+named Stripe Secrets, and then we are specifying it in the catalog.
+18:52
+This is way more secure because the dot env file is a hidden file.
+18:56
+Also, if you haven't watched my full stack tutorial,
+19:00
+you will need to open your Docker desktop and navigate to your models tab,
+19:05
+followed by the Docker Hub tab.
+19:08
+And here you will search for gemma3.
+19:11
+Great.
+19:11
+There you go.
+19:12
+We found it here and we can pull it into our computer.
+19:15
+And beautiful gemma3 is officially installed.
+19:18
+And this is a super small and friendly enough model to run on your CPU.
+19:24
+That's why I'm using it now.
+19:25
+You can install any other model.
+19:27
+Just please make sure you update the model name inside your dot env file.
+19:33
+Okay, so if you're downloading something else you can say
+19:36
+Qwen 2.5 or whatever it is you're using now.
+19:41
+Once our application is up and running, we will navigate to our browser
+19:45
+specifically to localhost in the port of 8501.
+19:50
+And beautiful.
+19:51
+This is where our GUI application lives.
+19:53
+And we can interact with our model through it.
+19:55
+Now in addition to chatting with the model let's ask it hi, how are you?
+20:00
+And then we'll get responses. As usual.
+20:02
+We can also invoke some MCP tools, and I actually prepared
+20:06
+some templates for these tools.
+20:08
+We can search for something on the web through DuckDuckGo,
+20:11
+or we can search for something on Huggingface.
+20:13
+If you're curious to see how it works, just find inside app.py
+20:19
+look for the get search topic function.
+20:22
+This function is listening to instances of search inside your prompt,
+20:27
+and it checks if it ends with on hugging face,
+20:30
+or on the web, or on the internet and so on.
+20:33
+It will then extract the search topic from the prompt,
+20:37
+and then it will automatically call the appropriate MCP tool.
+20:41
+Okay, so how does it work?
+20:42
+Let's say search Mariya Sha
+20:46
+on the web and tell me
+20:49
+who she is.
+20:51
+Okay. Let's have a look at the results.
+20:53
+Now to remind you, GEMA is way too small to know who I am,
+20:58
+so unless it actually got access to web search, it will have no idea.
+21:02
+Okay, it will start hallucinating or something.
+21:05
+So let's scroll up and let's see. Mariya.
+21:07
+She is a software developer and a content creator
+21:10
+focused on making programing and AI accessible.
+21:13
+Wow, okay.
+21:14
+Primarily known for her YouTube channel, Python
+21:17
+simplified so it even found this channel.
+21:20
+And it also found my LinkedIn, my Instagram, my GitHub, my website.
+21:24
+Holy moly.
+21:26
+Now another cool thing is that in addition to this response from the model,
+21:30
+we are also displaying the full search results from DuckDuckGo.
+21:34
+Now, if you're curious about other tools that we haven't tried yet,
+21:38
+just go back to your Docker desktop and expand any kind of server.
+21:41
+Let's go for playwright and inside the tools section
+21:45
+you will find all the tool names as well as their description,
+21:49
+at least a brief description, but if you're looking
+21:51
+for more information, you can always navigate to their GitHub.
+21:55
+And at the very bottom of this readme.
+21:58
+You will find a detailed list of tools.
+22:00
+So if we expand one of these categories, you will find
+22:04
+way more properties and features and so on.
+22:07
+The fun part
+22:09
+is that you can actually build your own MCP servers and your own MCP tools.
+22:13
+So this is just the tip of the iceberg.
+Final thoughts & Code Template
+22:15
+Congratulations.
+22:17
+Now you know exactly how to use Docker's MCP toolkit.
+
+<!--End Transcript-->

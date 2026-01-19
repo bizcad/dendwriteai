@@ -30,6 +30,7 @@
 ### Create Playwright Project (60 min)
 
 - [ ] **Initialize Playwright in project**
+
   ```bash
   # In workspace root
   npm init -y
@@ -38,6 +39,7 @@
   ```
 
 - [ ] **Create project structure**
+
   ```
   scripts/
   ├── signup/
@@ -72,8 +74,9 @@
 ### Build Script 1.1: Anthropic Signup (120 min)
 
 - [ ] **anthropic-signup.spec.ts structure**
+
   ```typescript
-  test('1.1 - Anthropic Account Signup & Get API Key', async ({ page }) => {
+  test("1.1 - Anthropic Account Signup & Get API Key", async ({ page }) => {
     // 1. Navigate to console.anthropic.com
     // 2. Handle cookie consent if appears
     // 3. Click "Sign Up" button
@@ -125,11 +128,12 @@
   - Add TODO: "Switch from mock to real QuestionManager API when endpoint ready"
 
 - [ ] **Update anthropic-signup.spec.ts to use questions**
+
   ```typescript
   // Instead of hardcoded email/password
-  const answers = await getQuestionAnswers('Anthropic');
-  const email = answers['anthropic-email'];
-  const password = answers['anthropic-password'];
+  const answers = await getQuestionAnswers("Anthropic");
+  const email = answers["anthropic-email"];
+  const password = answers["anthropic-password"];
   ```
 
 - [ ] **Plan for questions storage**
@@ -215,6 +219,7 @@ Think of it like this:
 **Next week**: Full orchestrator + parallel execution + end-to-end
 
 Today is where theory meets reality. You'll discover:
+
 - What actually works with Playwright
 - Where manual intervention is needed (2FA, CAPTCHA, email)
 - Real timing vs estimates
