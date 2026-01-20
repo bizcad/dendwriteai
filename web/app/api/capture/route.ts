@@ -1,6 +1,5 @@
 import { ConvexHttpClient } from "convex/browser";
-import { api } from "../../../../convex/_generated/api";
-
+import { api } from "../../../../../convex/_generated/api";
 export async function POST(request: Request) {
   try {
     const { text, email, clientMessageId } = await request.json();
