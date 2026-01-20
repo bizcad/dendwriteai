@@ -1,5 +1,6 @@
 {
-  "buildCommand": "cd convex && npx convex codegen && cd ../web && npm run build",
+  "root": ".",
+  "buildCommand": "npx convex codegen --project-dir ./convex && cd web && npm run build",
   "outputDirectory": "web/.next",
   "installCommand": "npm install"
 }
