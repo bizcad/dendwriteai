@@ -1,5 +1,5 @@
 import { ConvexHttpClient } from "convex/browser";
-import { api } from "../../../../convex/_generated/api";
+import { api } from "../../../convex/_generated/api";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       console.warn("⚠️ API Capture: Missing required fields");
       return Response.json(
         { error: "Missing required fields: text, email, clientMessageId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         {
           error: `Convex error: ${msg}`,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       {
         error: `Server error: ${errorMessage}`,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

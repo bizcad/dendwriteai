@@ -38,3 +38,6 @@ Thumbs.db
 
 # Session logging
 PromptTracking/
+
+# Environment files with secrets
+ProjectSecrets/Import.env
