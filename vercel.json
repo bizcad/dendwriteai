@@ -3,4 +3,3 @@
   "outputDirectory": "web/.next",
   "installCommand": "npm install"
 }
-// Connected to Vercel-created Convex project
