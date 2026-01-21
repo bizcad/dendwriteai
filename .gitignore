@@ -30,6 +30,7 @@ convex/_generated/
 
 # Secrets and sensitive data
 ProjectSecrets/
+PromptTracking/
 
 # Temporary
 .tmp/
