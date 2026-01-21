@@ -1,5 +1,5 @@
-const { defineApp } = require("convex/server");
+import { defineApp } from "convex/server";
 
 const app = defineApp();
 
-module.exports = app;
+export default app;
