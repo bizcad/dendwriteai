@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "cd .. && npx convex codegen && cd web && next build",
+    "build": "cd .. && npx -y --package=convex@^1.31.4 convex codegen && cd web && next build",
     "start": "next start",
     "lint": "eslint"
   },
