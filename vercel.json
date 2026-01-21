@@ -1,9 +1,5 @@
 {
   "buildCommand": "cd .. && cd convex && npx convex codegen && cd ../web && npm run build",
   "outputDirectory": "web/.next",
-  "installCommand": "cd .. && npm install && cd convex && npm install && cd ../web",
-  "framework": "nextjs",
-  "buildSettings": {
-    "rootDirectory": "web"
-  }
+  "installCommand": "cd .. && npm install && cd convex && npm install && cd ../web"
 }
