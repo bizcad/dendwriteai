@@ -28,6 +28,9 @@ build/
 # Convex
 convex/_generated/
 
+# Secrets and sensitive data
+ProjectSecrets/
+
 # Temporary
 .tmp/
 .cache/
